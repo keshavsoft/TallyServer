@@ -1,0 +1,6 @@
+post http://localhost:3000/TallyPost
+content-type: application/json
+
+{
+    "sName":"sss"
+}
