@@ -1,4 +1,28 @@
 post http://localhost:3000/TallyPostText
 content-type: text/plain
 
-"This is logged"
+<ENVELOPE>
+   <HEADER>
+     <VERSION>1</VERSION>
+     <TALLYREQUEST>Export</TALLYREQUEST>
+     <TYPE>Collection</TYPE>
+     <ID>Company Collection</ID>
+   </HEADER>
+   <BODY>
+     <DESC>
+       <STATICVARIABLES>
+         <SVEXPORTFORMAT>$$SysName:UTF8JSON</SVEXPORTFORMAT>
+         <SVExportLanguage>$$SysName:UTF8JSON</SVExportLanguage>
+       </STATICVARIABLES>
+       <TDL>
+         <TDLMESSAGE>
+           <COLLECTION NAME="Company Collection" ISMODIFY="No" ISFIXED="No" ISINITIALIZE="No" ISOPTION="No" ISINTERNAL="No">
+             <TYPE>Ledgers</TYPE>
+             <BELONGSTO>Yes</BELONGSTO>
+             <FETCH>NAME,STARTINGFROM</FETCH>
+           </COLLECTION>
+         </TDLMESSAGE>
+       </TDL>
+     </DESC>
+   </BODY>
+</ENVELOPE>
