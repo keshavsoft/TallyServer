@@ -2,9 +2,8 @@ const express = require('express')
 const fs = require('fs')
 const xml2js = require('xml2js')
 const app = express();
-const http = require('http');
 const server = http.createServer(app);
-let CommonForWebSocketStart = require("./WsStart");
+let CommonForWebSocketStart = require("./WebSocket/Start");
 
 CommonForWebSocketStart(server);
 
@@ -38,7 +37,7 @@ app.post('/TallyPostText', function (req, res) {
 
 
 let port = 3000;
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Listening in port : ${port}`);
     console.log(`Click to open : http://localhost:${port}`);
 });
