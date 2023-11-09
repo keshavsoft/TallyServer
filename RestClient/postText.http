@@ -1,0 +1,4 @@
+post http://localhost:3000/TallyPostText
+content-type: text/plain
+
+"This is logged"
