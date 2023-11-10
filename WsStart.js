@@ -27,7 +27,6 @@ let insertToClients = ({ inClients, ws }) => {
     const metadata = { id, color };
 
     inClients.set(ws, metadata);
-
 };
 
 let WsOnConnection = (ws, req) => {
@@ -44,17 +43,29 @@ let WsOnConnection = (ws, req) => {
 
         message.inComingMessage = messageAsString.toString();
 
-        console.log("message", messageAsString.toString());
+        const metadata = clients.get(ws);
+
+        console.log("metadata", metadata);
+
+        try {
+            let LocalJsonData = JSON.parse(messageAsString.toString());
+
+            if (LocalJsonData.From === "Service" && LocalJsonData.Type === "SysInfo") {
+                metadata.SysMAC = LocalJsonData.SysMac
+            };
+            // console.log("22222222", JSON.parse(messageAsString.toString()));
+
+            console.log("333", metadata);
+
+        } catch (error) {
+
+        };
 
         for (let [key, value] of clients) {
             console.log(value);
         };
 
 
-        const metadata = clients.get(ws);
-
-
-        console.log("metadata", metadata);
 
     });
 
