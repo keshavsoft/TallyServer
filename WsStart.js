@@ -45,7 +45,15 @@ let WsOnConnection = (ws, req) => {
 
         const metadata = clients.get(ws);
 
-        console.log("metadata", metadata);
+        console.log("metadata", metadata, message);
+
+        if (messageAsString.toString() === "keshav") {
+
+            for (let [key, value] of clients) {
+                key.send(`broadcast : ${messageAsString.toString()}`);
+            };
+
+        };
 
         try {
             let LocalJsonData = JSON.parse(messageAsString.toString());
@@ -54,19 +62,12 @@ let WsOnConnection = (ws, req) => {
                 metadata.SysMAC = LocalJsonData.SysMac
             };
             // console.log("22222222", JSON.parse(messageAsString.toString()));
-
+            ws.send(`rec sysinfo : ${LocalJsonData.SysMac}`);
             console.log("333", metadata);
 
         } catch (error) {
 
         };
-
-        for (let [key, value] of clients) {
-            console.log(value);
-        };
-
-
-
     });
 
     ws.on('close', () => {
