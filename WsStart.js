@@ -3,7 +3,7 @@ const WebSocket = require('ws');
 let wss;
 const clients = new Map();
 const clientsInfo = new Map();
-
+let CommonBroadcast = require('./ForWebSocket/Broadcast')
 
 let StartFunc = (server) => {
 
@@ -48,10 +48,10 @@ let WsOnConnection = (ws, req) => {
         console.log("metadata", metadata, message);
 
         if (messageAsString.toString() === "keshav") {
-
-            for (let [key, value] of clients) {
-                key.send(`broadcast : ${messageAsString.toString()}`);
-            };
+            CommonBroadcast({ inwss: wss, inmessage: JSON.stringify({FromId: metadata.id, FromMessage: messageAsString.toString()}), inClients: clients });
+            // for (let [key, value] of clients) {
+            //     key.send(`broadcast : ${messageAsString.toString()}`);
+            // };
 
         };
 
