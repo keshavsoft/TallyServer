@@ -4,6 +4,8 @@ let wss;
 const clients = new Map();
 const clientsInfo = new Map();
 let CommonBroadcast = require('./ForWebSocket/Broadcast')
+let CommonOnlineClients = require('./ForWebSocket/OnlineClients')
+let CommonOnlineClientsFromSendMessage = require('./ForWebSocket/SendMessage/OnlineClients')
 
 let StartFunc = (server) => {
 
@@ -38,6 +40,8 @@ let WsOnConnection = (ws, req) => {
     const ip = req.socket.remoteAddress;
     ws.send(ip);
 
+    CommonOnlineClientsFromSendMessage({ inmessage: CommonOnlineClients({inClients: clients}), inws: ws});
+
     ws.on('message', (messageAsString) => {
         const message = {};
 
@@ -47,26 +51,20 @@ let WsOnConnection = (ws, req) => {
 
         console.log("metadata", metadata, message);
 
-        if (messageAsString.toString() === "keshav") {
-            CommonBroadcast({ inwss: wss, inmessage: JSON.stringify({FromId: metadata.id, FromMessage: messageAsString.toString()}), inClients: clients });
-            // for (let [key, value] of clients) {
-            //     key.send(`broadcast : ${messageAsString.toString()}`);
-            // };
-
-        };
-
         try {
             let LocalJsonData = JSON.parse(messageAsString.toString());
 
             if (LocalJsonData.From === "Service" && LocalJsonData.Type === "SysInfo") {
                 metadata.SysMAC = LocalJsonData.SysMac
             };
-            // console.log("22222222", JSON.parse(messageAsString.toString()));
+            // ws.send(`rec sysinfo : ${LocalJsonData.SysMac}`);
             ws.send(`rec sysinfo : ${LocalJsonData.SysMac}`);
             console.log("333", metadata);
 
         } catch (error) {
-
+            if (messageAsString.toString() === "keshav") {
+                CommonBroadcast({ inwss: wss, inmessage: JSON.stringify({ FromId: metadata.id, FromMessage: messageAsString.toString() }), inClients: clients });
+            };
         };
     });
 
