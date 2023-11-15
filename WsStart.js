@@ -7,6 +7,7 @@ let CommonBroadcast = require('./ForWebSocket/Broadcast')
 let CommonOnlineClients = require('./ForWebSocket/OnlineClients')
 let CommonOnlineClientsFromSendMessage = require('./ForWebSocket/SendMessage/OnlineClients')
 let CommoninsertToClients = require('./ForWebSocket/insertToClients')
+let CommonOnMessage = require('./ForWebSocket/OnMessage')
 
 let StartFunc = (server) => {
     wss = new WebSocket.Server({ server });
@@ -47,9 +48,6 @@ let WsOnConnection = (ws, req) => {
 
         const metadata = clients.get(ws);
 
-        console.log("metadata", metadata, message);
-
-        // console.log("-------------------",JSON.parse(messageAsString.toString()));
         if (message.inComingMessage.MessageType === "AlterClient") {
             metadata.Name = message.inComingMessage.JsonData;
         }
