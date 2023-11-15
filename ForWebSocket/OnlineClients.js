@@ -3,7 +3,7 @@ let StartFunc = ({ inClients }) => {
     for (let [key, value] of inClients) {
         jVarLocalReturnArray.push(value);
     };
-    console.log("hi",jVarLocalReturnArray);
+    // console.log("hi",jVarLocalReturnArray);
     return jVarLocalReturnArray;
 }
 
