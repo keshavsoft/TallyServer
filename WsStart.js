@@ -26,7 +26,8 @@ function uuidv4() {
 let insertToClients = ({ inClients, ws }) => {
     const id = uuidv4();
     const color = Math.floor(Math.random() * 360);
-    const metadata = { id, color };
+    const Name = "Anonymous"
+    const metadata = { id, color, Name };
 
     inClients.set(ws, metadata);
 };
@@ -40,17 +41,20 @@ let WsOnConnection = (ws, req) => {
     const ip = req.socket.remoteAddress;
     ws.send(ip);
 
-    CommonOnlineClientsFromSendMessage({ inmessage: CommonOnlineClients({inClients: clients}), inws: ws});
+    CommonOnlineClientsFromSendMessage({ inmessage: CommonOnlineClients({ inClients: clients }), inws: ws });
 
     ws.on('message', (messageAsString) => {
         const message = {};
-
         message.inComingMessage = messageAsString.toString();
 
         const metadata = clients.get(ws);
 
         console.log("metadata", metadata, message);
 
+        // console.log("-------------------",JSON.parse(messageAsString.toString()));
+        if (message.inComingMessage.MessageType === "AlterClient") {
+            metadata.Name = message.inComingMessage.JsonData;
+        }
         try {
             let LocalJsonData = JSON.parse(messageAsString.toString());
 
@@ -62,9 +66,10 @@ let WsOnConnection = (ws, req) => {
             console.log("333", metadata);
 
         } catch (error) {
-            if (messageAsString.toString() === "keshav") {
-                CommonBroadcast({ inwss: wss, inmessage: JSON.stringify({ FromId: metadata.id, FromMessage: messageAsString.toString() }), inClients: clients });
-            };
+            let LocalMessageAsString = messageAsString.toString();
+            if (LocalMessageAsString === "keshav") {
+                CommonBroadcast({ inwss: wss, inmessage: JSON.stringify({ FromId: metadata.id, FromMessage: LocalMessageAsString }), inClients: clients });
+            }
         };
     });
 
