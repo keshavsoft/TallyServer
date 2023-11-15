@@ -1,10 +1,10 @@
 let CommonBroadcast = require('../Broadcast');
 
-let StartFunc = ({ inMessageAsString } ) => {
+let StartFunc = ({ inwss, inMessageAsString, inMetadata }) => {
     let LocalMessageAsString = inMessageAsString.toString();
-        if (LocalMessageAsString === "keshav") {
-            CommonBroadcast({ inwss: wss, inmessage: JSON.stringify({ FromId: metadata.id, FromMessage: LocalMessageAsString }) });
-        }
+    if (LocalMessageAsString === "keshav") {
+        CommonBroadcast({ inwss: inwss, inmessage: JSON.stringify({ FromId: inMetadata.id, FromMessage: LocalMessageAsString }) });
+    }
 
 };
 
