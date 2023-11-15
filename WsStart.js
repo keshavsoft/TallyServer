@@ -25,8 +25,14 @@ let WsOnConnection = (ws, req) => {
 
     CommonOnlineClientsFromSendMessage({ inmessage: CommonOnlineClients({ inClients: clients }), inws: ws });
 
-    ws.on('message', (messageAsString) => CommonOnMessage({ inMessageAsString: messageAsString, inClients: clients, inws: ws }));
-    
+    ws.on('message', (messageAsString) =>
+        CommonOnMessage({
+            inMessageAsString: messageAsString,
+            inClients: clients,
+            inws: ws,
+            inwss: wss
+        }));
+
     ws.on('close', () => {
         console.log('closed');
     });
