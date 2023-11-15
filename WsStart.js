@@ -6,13 +6,12 @@ const clientsInfo = new Map();
 let CommonBroadcast = require('./ForWebSocket/Broadcast')
 let CommonOnlineClients = require('./ForWebSocket/OnlineClients')
 let CommonOnlineClientsFromSendMessage = require('./ForWebSocket/SendMessage/OnlineClients')
+let CommoninsertToClients = require('./ForWebSocket/insertToClients')
 
 let StartFunc = (server) => {
-
     wss = new WebSocket.Server({ server });
 
     wss.on("connection", WsOnConnection);
-
 };
 
 function uuidv4() {
@@ -21,7 +20,6 @@ function uuidv4() {
         return v.toString(16);
     });
 };
-
 
 let insertToClients = ({ inClients, ws }) => {
     const id = uuidv4();
@@ -33,7 +31,7 @@ let insertToClients = ({ inClients, ws }) => {
 };
 
 let WsOnConnection = (ws, req) => {
-    insertToClients({
+    CommoninsertToClients({
         inClients: clients,
         ws
     });
