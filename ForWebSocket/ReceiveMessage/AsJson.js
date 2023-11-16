@@ -1,7 +1,10 @@
+const WebSocket = require('ws');
+
 let CommonBroadcast = require('../Broadcast');
 let CommonBroadcastOnly = require('../BroadcastOnly');
-let CommonPrivateMessage  = require('../PrivateMessage');
-let CommonOnlineClients = require('../OnlineClients')
+let CommonPrivateMessage = require('../PrivateMessage');
+let CommonOnlineClients = require('../OnlineClients');
+let CommonRefreshOnlineClients = require('../RefreshOnlineClients');
 
 let StartFunc = ({ inMessageAsJson, inws, inMetadata, inClients, inwss }) => {
 
@@ -16,17 +19,23 @@ let StartFunc = ({ inMessageAsJson, inws, inMetadata, inClients, inwss }) => {
     }
     if (LocalJsonData.Type === "BroadcastOnly") {
 
-        LocalFuncForBroadcastOnly({ inws, inwss, inMetadata, LocalJsonData  });
+        LocalFuncForBroadcastOnly({ inws, inwss, inMetadata, LocalJsonData });
     }
     if (LocalJsonData.Type === "BroadcastAll") {
 
-        LocalFuncForBroadcastAll({ inwss, inMetadata, LocalJsonData  });
+        LocalFuncForBroadcastAll({ inwss, inMetadata, LocalJsonData });
     }
     if (LocalJsonData.Type === "PrivateMessage") {
 
-        LocalFuncForPrivateMessage({ inws, inMetadata, LocalJsonData, inClients  });
+        LocalFuncForPrivateMessage({ inwss, inMetadata, LocalJsonData, inClients });
     }
-   
+    if (LocalJsonData.Type === "Terminate") {
+        LocalFuncForTerminate({ inws, inMetadata });
+    }
+    if (LocalJsonData.Type === "RefreshOnlineClients") {
+        LocalFuncForRefreshOnlineClients({ inClients, inwss });
+    }
+
 };
 
 let LocalFuncForAlterClient = ({ LocalJsonData, inMetadata, inws, inClients, inwss }) => {
@@ -58,7 +67,7 @@ let LocalFuncForSendClients = ({ inClients, inwss }) => {
 
 }
 
-let LocalFuncForBroadcastOnly = ({ inws, inwss, inMetadata, LocalJsonData  }) => {
+let LocalFuncForBroadcastOnly = ({ inws, inwss, inMetadata, LocalJsonData }) => {
     let LocalMessageAsString = LocalJsonData.Message;
     let LocalObjectToSend = {};
     LocalObjectToSend.MessageType = "BroadcastOnly";
@@ -66,12 +75,12 @@ let LocalFuncForBroadcastOnly = ({ inws, inwss, inMetadata, LocalJsonData  }) =>
     LocalObjectToSend.JsonData.FromName = inMetadata.Name;
     LocalObjectToSend.JsonData.FromId = inMetadata.id;
     LocalObjectToSend.JsonData.FromMessage = LocalMessageAsString;
-    console.log("LocalObjectToSend",LocalObjectToSend);
+    console.log("LocalObjectToSend", LocalObjectToSend);
 
     CommonBroadcastOnly({ inws, inwss: inwss, inmessage: JSON.stringify(LocalObjectToSend) });
 }
 
-let LocalFuncForBroadcastAll = ({ inwss, inMetadata, LocalJsonData  }) => {
+let LocalFuncForBroadcastAll = ({ inwss, inMetadata, LocalJsonData }) => {
     let LocalMessageAsString = LocalJsonData.Message;
     let LocalObjectToSend = {};
     LocalObjectToSend.MessageType = "BroadcastAll";
@@ -83,7 +92,7 @@ let LocalFuncForBroadcastAll = ({ inwss, inMetadata, LocalJsonData  }) => {
     CommonBroadcast({ inwss: inwss, inmessage: JSON.stringify(LocalObjectToSend) });
 }
 
-let LocalFuncForPrivateMessage = ({ inws, inMetadata, LocalJsonData, inClients  }) => {
+let LocalFuncForPrivateMessage = ({ inwss, inMetadata, LocalJsonData, inClients }) => {
     let LocalMessageAsString = LocalJsonData.Message;
     let LocalReceiverName = LocalJsonData.Receiver;
     let LocalObjectToSend = {};
@@ -94,8 +103,21 @@ let LocalFuncForPrivateMessage = ({ inws, inMetadata, LocalJsonData, inClients  
     LocalObjectToSend.JsonData.FromMessage = LocalMessageAsString;
     LocalObjectToSend.JsonData.Receiver = LocalReceiverName;
 
-    CommonPrivateMessage({ inws, inmessage: JSON.stringify(LocalObjectToSend), inReceiver: LocalReceiverName, inClients });
+    CommonPrivateMessage({ inwss, inmessage: JSON.stringify(LocalObjectToSend), inReceiver: LocalReceiverName, inClients });
 }
 
+let LocalFuncForTerminate = ({ inws }) => {
+
+    inws.close();
+}
+
+let LocalFuncForRefreshOnlineClients = ({ inClients, inwss }) => {
+
+    let LocalObjectToSend = {};
+    LocalObjectToSend.MessageType = "RefreshOnlineClients";
+    LocalObjectToSend.JsonData = CommonRefreshOnlineClients({ inClients });
+    CommonBroadcast({ inwss: inwss, inmessage: JSON.stringify(LocalObjectToSend) });
+
+}
 
 module.exports = StartFunc;
