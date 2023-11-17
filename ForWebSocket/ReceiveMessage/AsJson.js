@@ -35,6 +35,12 @@ let StartFunc = ({ inMessageAsJson, inws, inMetadata, inClients, inwss }) => {
     if (LocalJsonData.Type === "RefreshOnlineClients") {
         LocalFuncForRefreshOnlineClients({ inClients, inwss });
     }
+    if (LocalJsonData.Type === "PrivateTab") {
+        LocalFuncForPrivateTab({ LocalJsonData, inws });
+    }
+    if (LocalJsonData.Type === "PrivateTabMessage") {
+        LocalFuncForPrivateTabMessage({ LocalJsonData, inws, inMetadata });
+    }
 
 };
 
@@ -118,6 +124,29 @@ let LocalFuncForRefreshOnlineClients = ({ inClients, inwss }) => {
     LocalObjectToSend.JsonData = CommonRefreshOnlineClients({ inClients });
     CommonBroadcast({ inwss: inwss, inmessage: JSON.stringify(LocalObjectToSend) });
 
+}
+
+let LocalFuncForPrivateTab = ({ LocalJsonData, inws }) => {
+    let LocalObjectToSend = {};
+    LocalObjectToSend.MessageType = "PrivateTab";
+    LocalObjectToSend.JsonData = {};
+    LocalObjectToSend.JsonData.TabName = LocalJsonData.TabName;
+
+    inws.send(JSON.stringify(LocalObjectToSend));
+}
+
+let LocalFuncForPrivateTabMessage = ({ LocalJsonData, inws, inMetadata }) => {
+    let LocalMessageAsString = LocalJsonData.Message;
+    let LocalReceiverName = LocalJsonData.Receiver;
+    let LocalObjectToSend = {};
+    LocalObjectToSend.MessageType = "PrivateTabMessage";
+    LocalObjectToSend.JsonData = {};
+    LocalObjectToSend.JsonData.FromName = inMetadata.Name;
+    LocalObjectToSend.JsonData.FromId = inMetadata.id;
+    LocalObjectToSend.JsonData.FromMessage = LocalMessageAsString;
+    LocalObjectToSend.JsonData.Receiver = LocalReceiverName;
+
+    inws.send(JSON.stringify(LocalObjectToSend));
 }
 
 module.exports = StartFunc;
