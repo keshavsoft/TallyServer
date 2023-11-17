@@ -4,7 +4,7 @@ const xml2js = require('xml2js')
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-let CommonForWebSocketStart = require("./WsStart");
+let CommonForWebSocketStart = require("./ForWebSocket/EntryFile");
 
 CommonForWebSocketStart(server);
 
